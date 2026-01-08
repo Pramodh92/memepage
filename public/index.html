@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Meme Museum 🎨</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🎨</span>
+                <span class="logo-text">AWS Meme Museum</span>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-secondary" onclick="showLoginModal()">Login</button>
+                <button class="btn btn-primary" onclick="showUploadModal()">Upload Meme</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Welcome to AWS Meme Museum</h1>
+            <p class="hero-subtitle">The ultimate collection of cloud computing memes powered by AWS</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number" id="memeCount">0</div>
+                    <div class="stat-label">Memes</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">AWS Services</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="totalLikes">0</div>
+                    <div class="stat-label">Total Likes</div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-bg"></div>
+    </section>
+
+    <!-- Tab Navigation -->
+    <section class="tab-navigation">
+        <div class="container">
+            <div class="tab-controls">
+                <button class="tab-btn active" onclick="switchTab('home')">
+                    <span class="tab-icon">🏠</span>
+                    <span class="tab-label">Home</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('gallery')">
+                    <span class="tab-icon">🖼️</span>
+                    <span class="tab-label">Gallery</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('trending')">
+                    <span class="tab-icon">🔥</span>
+                    <span class="tab-label">Trending</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="filter-section">
+        <div class="container">
+            <div class="filter-controls">
+                <button class="filter-btn active" onclick="filterMemes('all')">All Memes</button>
+                <button class="filter-btn" onclick="filterMemes('featured')">Featured</button>
+                <button class="filter-btn" onclick="filterMemes('popular')">Most Liked</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Memes will be loaded here dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload New Meme</h2>
+                <button class="close-btn" onclick="closeUploadModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadForm">
+                    <div class="form-group">
+                        <label for="memeTitle">Meme Title</label>
+                        <input type="text" id="memeTitle" placeholder="Enter meme title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="memeAuthor">Your Name</label>
+                        <input type="text" id="memeAuthor" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Image</label>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">📤</div>
+                            <p>Drag & drop your meme here or click to browse</p>
+                            <input type="file" id="memeFile" accept="image/*" hidden>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="memeDescription">Description (About the Meme)</label>
+                        <textarea id="memeDescription" rows="3" placeholder="Tell us about this meme..."
+                            required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="memeTags">Tags (comma-separated)</label>
+                        <input type="text" id="memeTags" placeholder="e.g., Lambda, Serverless, AWS" required>
+                        <small class="form-hint">Separate tags with commas</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Upload Meme</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Meme</h2>
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editMemeId">
+                    <div class="form-group">
+                        <label for="editMemeTitle">Meme Title</label>
+                        <input type="text" id="editMemeTitle" placeholder="Enter meme title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMemeAuthor">Author Name</label>
+                        <input type="text" id="editMemeAuthor" placeholder="Enter author name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMemeDescription">Description (About the Meme)</label>
+                        <textarea id="editMemeDescription" rows="3" placeholder="Tell us about this meme..."
+                            required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMemeTags">Tags (comma-separated)</label>
+                        <input type="text" id="editMemeTags" placeholder="e.g., Lambda, Serverless, AWS" required>
+                        <small class="form-hint">Separate tags with commas</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Replace Image (Optional)</label>
+                        <div class="upload-area" id="editUploadArea">
+                            <div class="upload-icon">📤</div>
+                            <p>Click to browse for a new image (optional)</p>
+                            <input type="file" id="editMemeFile" accept="image/*" hidden>
+                        </div>
+                        <div id="currentImagePreview" style="margin-top: 1rem; text-align: center;">
+                            <p style="color: var(--text-secondary); font-size: 0.9rem;">Current image:</p>
+                            <img id="currentImage" src="" alt="Current meme"
+                                style="max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 0.5rem;">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Update Meme</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login to AWS Meme Museum</h2>
+                <button class="close-btn" onclick="closeLoginModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                </form>
+                <div class="modal-footer">
+                    <p>Don't have an account? <a href="#" onclick="showSignupModal()">Sign up</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Account</h2>
+                <button class="close-btn" onclick="closeSignupModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="signupUsername">Username</label>
+                        <input type="text" id="signupUsername" placeholder="Choose a username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" placeholder="Create a password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                </form>
+                <div class="modal-footer">
+                    <p>Already have an account? <a href="#" onclick="showLoginModal()">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>AWS Meme Museum</h3>
+                    <p>Powered by Amazon EC2, DynamoDB, and SNS</p>
+                </div>
+                <div class="footer-section">
+                    <h4>AWS Services</h4>
+                    <ul>
+                        <li>Amazon EC2</li>
+                        <li>Amazon DynamoDB</li>
+                        <li>Amazon SNS</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#" onclick="showUploadModal()">Upload Meme</a></li>
+                        <li><a href="#" onclick="loadGallery()">Gallery</a></li>
+                        <li><a href="#" onclick="showLoginModal()">Login</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 AWS Meme Museum. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
